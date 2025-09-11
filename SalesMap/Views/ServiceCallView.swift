@@ -208,6 +208,10 @@ enum ServiceCallStatus: String, Codable {
     case inProgress = "In Progress"
     case resolved = "Resolved"
     case closed = "Closed"
+
+    var displayName: String {
+        return self.rawValue
+    }
 }
 
 struct ServiceCall: Identifiable, Codable {

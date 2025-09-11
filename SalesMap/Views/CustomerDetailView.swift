@@ -14,10 +14,18 @@ struct CustomerDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingCheckIn = false
     @State private var showingServiceCall = false
+    @State private var showingDeliveryHistory = false
     
     var recentVisits: [Visit] {
         dataService.getVisitsForCustomer(customer.id)
             .sorted { $0.checkInTime > $1.checkInTime }
+            .prefix(3)
+            .map { $0 }
+    }
+
+    var recentServiceCalls: [ServiceCall] {
+        dataService.getServiceCallsForCustomer(customer.id)
+            .sorted { $0.createdAt > $1.createdAt }
             .prefix(3)
             .map { $0 }
     }
@@ -115,43 +123,86 @@ struct CustomerDetailView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Recent Visits")
                                 .font(.headline)
-                            
+
                             ForEach(recentVisits) { visit in
                                 VisitRow(visit: visit)
                             }
                         }
                     }
-                    
-                    // Sales Information
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Sales Information")
-                            .font(.headline)
-                        
-                        HStack {
-                            Text("Total Revenue:")
-                            Spacer()
-                            Text("$\(Int(customer.totalRevenue).formatted())")
-                                .fontWeight(.semibold)
-                        }
-                        
-                        if let lastPurchase = customer.lastPurchase {
-                            HStack {
-                                Text("Last Purchase:")
-                                Spacer()
-                                Text(lastPurchase, style: .date)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        
-                        if let lastContact = customer.lastContact {
-                            HStack {
-                                Text("Last Contact:")
-                                Spacer()
-                                Text(lastContact, style: .date)
-                                    .foregroundColor(.secondary)
+
+                    // Recent Service
+                    if !recentServiceCalls.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Recent Service")
+                                .font(.headline)
+
+                            ForEach(recentServiceCalls) { serviceCall in
+                                ServiceCallRow(serviceCall: serviceCall)
                             }
                         }
                     }
+
+                    // Sales Information - Tappable
+                    Button(action: {
+                        showingDeliveryHistory = true
+                    }) {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Text("Sales Information")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+
+                                Spacer()
+
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            HStack {
+                                Text("Total Revenue:")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Text("$\(Int(customer.totalRevenue).formatted())")
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.primary)
+                            }
+
+                            if let lastPurchase = customer.lastPurchase {
+                                HStack {
+                                    Text("Last Purchase:")
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text(lastPurchase, style: .date)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+
+                            if let lastContact = customer.lastContact {
+                                HStack {
+                                    Text("Last Contact:")
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text(lastContact, style: .date)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+
+                            // Hint text
+                            HStack {
+                                Text("Tap to view delivery history")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                                Spacer()
+                            }
+                            .padding(.top, 4)
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
                 .padding()
             }
@@ -167,6 +218,9 @@ struct CustomerDetailView: View {
             }
             .sheet(isPresented: $showingServiceCall) {
                 ServiceCallView(customer: customer)
+            }
+            .sheet(isPresented: $showingDeliveryHistory) {
+                DeliveryHistoryView(customer: customer)
             }
         }
     }
@@ -252,6 +306,50 @@ struct VisitRow: View {
         .padding(.horizontal, 12)
         .background(Color(.systemGray6))
         .cornerRadius(8)
+    }
+}
+
+struct ServiceCallRow: View {
+    let serviceCall: ServiceCall
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(serviceCall.problemDescription)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .lineLimit(2)
+                Text(serviceCall.createdAt, style: .date)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            VStack(alignment: .trailing, spacing: 4) {
+                PriorityBadge(priority: serviceCall.priority)
+                Text(serviceCall.status.displayName)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .background(Color(.systemGray6))
+        .cornerRadius(8)
+    }
+}
+
+struct PriorityBadge: View {
+    let priority: ServiceCallPriority
+
+    var body: some View {
+        Text(priority.displayName)
+            .font(.caption)
+            .fontWeight(.medium)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(priority.color.opacity(0.2))
+            .foregroundColor(priority.color)
+            .cornerRadius(4)
     }
 }
 

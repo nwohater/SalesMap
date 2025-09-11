@@ -13,6 +13,7 @@ class DataService: ObservableObject {
     @Published var customers: [Customer] = []
     @Published var visits: [Visit] = []
     @Published var serviceCalls: [ServiceCall] = []
+    @Published var deliveries: [Delivery] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     
@@ -20,6 +21,7 @@ class DataService: ObservableObject {
     private let customersKey = "saved_customers"
     private let visitsKey = "saved_visits"
     private let serviceCallsKey = "saved_service_calls"
+    private let deliveriesKey = "saved_deliveries"
     
     init() {
         loadSavedData()
@@ -106,6 +108,30 @@ class DataService: ObservableObject {
     func getServiceCallsForCustomer(_ customerId: String) -> [ServiceCall] {
         return serviceCalls.filter { $0.customerId == customerId }
     }
+
+    // MARK: - Delivery Operations
+    func fetchDeliveries() async {
+        await MainActor.run {
+            isLoading = true
+            errorMessage = nil
+        }
+
+        // Simulate network delay
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+
+        await MainActor.run {
+            // For MVP, use sample data
+            if deliveries.isEmpty {
+                deliveries = Delivery.sampleDeliveries
+                saveDeliveries()
+            }
+            isLoading = false
+        }
+    }
+
+    func getDeliveriesForCustomer(_ customerId: String) -> [Delivery] {
+        return deliveries.filter { $0.customerId == customerId }
+    }
     
     // MARK: - Persistence
     private func saveCustomers() {
@@ -123,6 +149,12 @@ class DataService: ObservableObject {
     private func saveServiceCalls() {
         if let encoded = try? JSONEncoder().encode(serviceCalls) {
             userDefaults.set(encoded, forKey: serviceCallsKey)
+        }
+    }
+
+    private func saveDeliveries() {
+        if let encoded = try? JSONEncoder().encode(deliveries) {
+            userDefaults.set(encoded, forKey: deliveriesKey)
         }
     }
     
@@ -143,6 +175,12 @@ class DataService: ObservableObject {
         if let data = userDefaults.data(forKey: serviceCallsKey),
            let savedServiceCalls = try? JSONDecoder().decode([ServiceCall].self, from: data) {
             serviceCalls = savedServiceCalls
+        }
+
+        // Load deliveries
+        if let data = userDefaults.data(forKey: deliveriesKey),
+           let savedDeliveries = try? JSONDecoder().decode([Delivery].self, from: data) {
+            deliveries = savedDeliveries
         }
     }
 }

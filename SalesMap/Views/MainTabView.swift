@@ -48,6 +48,7 @@ struct MainTabView: View {
                     Task {
                         await dataService.fetchCustomers()
                         await dataService.fetchVisits()
+                        await dataService.fetchDeliveries()
                     }
                 }
             } else {
