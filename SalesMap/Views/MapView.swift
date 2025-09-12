@@ -15,6 +15,12 @@ struct MapView: View {
         center: CLLocationCoordinate2D(latitude: 37.3348, longitude: -122.0090), // Cupertino, CA (Apple Park)
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
+    @State private var mapPosition = MapCameraPosition.region(
+        MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 37.3348, longitude: -122.0090),
+            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+        )
+    )
     @State private var radiusInMiles: Double = 25.0
     @State private var selectedCustomer: Customer?
     @State private var showingMapFilters = false
@@ -61,11 +67,13 @@ struct MapView: View {
         if customers.count == 1 {
             // If only one customer, center on them with a reasonable zoom
             let customer = customers[0]
+            let newRegion = MKCoordinateRegion(
+                center: customer.coordinate,
+                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+            )
             withAnimation(.easeInOut(duration: 1.0)) {
-                region = MKCoordinateRegion(
-                    center: customer.coordinate,
-                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                )
+                region = newRegion
+                mapPosition = .region(newRegion)
             }
         } else {
             // Calculate bounding box for all customers
@@ -83,11 +91,13 @@ struct MapView: View {
             let latDelta = max(maxLat - minLat, 0.01) * 1.3 // Add 30% padding
             let lonDelta = max(maxLon - minLon, 0.01) * 1.3 // Add 30% padding
 
+            let newRegion = MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon),
+                span: MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
+            )
             withAnimation(.easeInOut(duration: 1.0)) {
-                region = MKCoordinateRegion(
-                    center: CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon),
-                    span: MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
-                )
+                region = newRegion
+                mapPosition = .region(newRegion)
             }
         }
     }
@@ -95,29 +105,36 @@ struct MapView: View {
     private func centerOnMyLocation() {
         guard let currentLocation = locationManager.location else { return }
 
+        let newRegion = MKCoordinateRegion(
+            center: currentLocation.coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        )
         withAnimation(.easeInOut(duration: 1.0)) {
-            region = MKCoordinateRegion(
-                center: currentLocation.coordinate,
-                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-            )
+            region = newRegion
+            mapPosition = .region(newRegion)
         }
     }
 
     var body: some View {
         NavigationView {
             ZStack {
-                Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: filteredCustomers) { customer in
-                    MapAnnotation(coordinate: customer.coordinate) {
-                        CustomerMapPin(customer: customer) {
-                            selectedCustomer = customer
+                Map(position: $mapPosition, interactionModes: .all) {
+                    UserAnnotation()
+
+                    ForEach(filteredCustomers) { customer in
+                        Annotation(customer.name, coordinate: customer.coordinate) {
+                            CustomerMapPin(customer: customer) {
+                                selectedCustomer = customer
+                            }
                         }
                     }
                 }
+                .mapControlVisibility(.hidden)
                 .onAppear {
                     locationManager.requestLocationPermission()
                     updateRegionToUserLocation()
                 }
-                .onChange(of: locationManager.location) { _ in
+                .onChange(of: locationManager.location) {
                     updateRegionToUserLocation()
                 }
                 
@@ -219,12 +236,14 @@ struct MapView: View {
     
     private func updateRegionToUserLocation() {
         guard let userLocation = locationManager.location else { return }
-        
+
+        let newRegion = MKCoordinateRegion(
+            center: userLocation.coordinate,
+            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+        )
         withAnimation {
-            region = MKCoordinateRegion(
-                center: userLocation.coordinate,
-                span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-            )
+            region = newRegion
+            mapPosition = .region(newRegion)
         }
     }
 }
