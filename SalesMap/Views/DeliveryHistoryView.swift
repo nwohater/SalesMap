@@ -11,6 +11,7 @@ struct DeliveryHistoryView: View {
     let customer: Customer
     @EnvironmentObject var dataService: DataService
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedDelivery: Delivery?
     
     var recentDeliveries: [Delivery] {
         dataService.getDeliveriesForCustomer(customer.id)
@@ -104,7 +105,9 @@ struct DeliveryHistoryView: View {
                         } else {
                             LazyVStack(spacing: 12) {
                                 ForEach(recentDeliveries) { delivery in
-                                    DeliveryRow(delivery: delivery)
+                                    DeliveryRow(delivery: delivery) {
+                                        selectedDelivery = delivery
+                                    }
                                 }
                             }
                         }
@@ -121,41 +124,60 @@ struct DeliveryHistoryView: View {
                     }
                 }
             }
+            .sheet(item: $selectedDelivery) { delivery in
+                DeliveryDetailView(delivery: delivery, customer: customer)
+            }
         }
     }
 }
 
 struct DeliveryRow: View {
     let delivery: Delivery
-    
+    let onTap: () -> Void
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(delivery.orderNumber)
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                    
-                    Text(delivery.date, style: .date)
-                        .font(.subheadline)
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(delivery.orderNumber)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+
+                        Text(delivery.date, style: .date)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("$\(Int(delivery.total).formatted())")
+                            .font(.headline)
+                            .fontWeight(.bold)
+                            .foregroundColor(.primary)
+
+                        StatusBadge(status: delivery.status)
+                    }
+                }
+
+                // Add hint text for tapping
+                HStack {
+                    Text("Tap to view items and invoice details")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("$\(Int(delivery.total).formatted())")
-                        .font(.headline)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
-                    
-                    StatusBadge(status: delivery.status)
-                }
+                .padding(.top, 4)
             }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(12)
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

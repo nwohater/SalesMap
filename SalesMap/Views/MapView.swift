@@ -53,7 +53,56 @@ struct MapView: View {
 
         return filtered
     }
-    
+
+    private func centerOnCustomers() {
+        let customers = filteredCustomers
+        guard !customers.isEmpty else { return }
+
+        if customers.count == 1 {
+            // If only one customer, center on them with a reasonable zoom
+            let customer = customers[0]
+            withAnimation(.easeInOut(duration: 1.0)) {
+                region = MKCoordinateRegion(
+                    center: customer.coordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                )
+            }
+        } else {
+            // Calculate bounding box for all customers
+            let latitudes = customers.map { $0.latitude }
+            let longitudes = customers.map { $0.longitude }
+
+            let minLat = latitudes.min() ?? 0
+            let maxLat = latitudes.max() ?? 0
+            let minLon = longitudes.min() ?? 0
+            let maxLon = longitudes.max() ?? 0
+
+            let centerLat = (minLat + maxLat) / 2
+            let centerLon = (minLon + maxLon) / 2
+
+            let latDelta = max(maxLat - minLat, 0.01) * 1.3 // Add 30% padding
+            let lonDelta = max(maxLon - minLon, 0.01) * 1.3 // Add 30% padding
+
+            withAnimation(.easeInOut(duration: 1.0)) {
+                region = MKCoordinateRegion(
+                    center: CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon),
+                    span: MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
+                )
+            }
+        }
+    }
+
+    private func centerOnMyLocation() {
+        guard let currentLocation = locationManager.location else { return }
+
+        withAnimation(.easeInOut(duration: 1.0)) {
+            region = MKCoordinateRegion(
+                center: currentLocation.coordinate,
+                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+            )
+        }
+    }
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -77,6 +126,40 @@ struct MapView: View {
                     // Top controls
                     HStack {
                         Spacer()
+
+                        // Center on my location button
+                        Button(action: {
+                            centerOnMyLocation()
+                        }) {
+                            Image(systemName: "scope")
+                                .font(.title2)
+                                .foregroundColor(.blue)
+                                .background(Color(.systemBackground))
+                                .clipShape(Circle())
+                                .shadow(radius: 3)
+                        }
+                        .padding(.trailing, 8)
+                        .padding(.top, 16)
+                        .disabled(locationManager.location == nil)
+                        .opacity(locationManager.location == nil ? 0.5 : 1.0)
+
+                        // Center on customers button
+                        Button(action: {
+                            centerOnCustomers()
+                        }) {
+                            Image(systemName: "mappin.and.ellipse")
+                                .font(.title2)
+                                .foregroundColor(.blue)
+                                .background(Color(.systemBackground))
+                                .clipShape(Circle())
+                                .shadow(radius: 3)
+                        }
+                        .padding(.trailing, 8)
+                        .padding(.top, 16)
+                        .disabled(filteredCustomers.isEmpty)
+                        .opacity(filteredCustomers.isEmpty ? 0.5 : 1.0)
+
+                        // Filter button
                         Button(action: {
                             withAnimation {
                                 showingMapFilters.toggle()
