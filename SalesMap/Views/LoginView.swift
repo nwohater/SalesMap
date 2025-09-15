@@ -55,7 +55,7 @@ struct LoginView: View {
                     
                     if let errorMessage = authService.errorMessage {
                         Text(errorMessage)
-                            .foregroundColor(.red)
+                            .foregroundColor(.brandRed)
                             .font(.caption)
                     }
                     
@@ -74,7 +74,7 @@ struct LoginView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(Color.brandPrimary)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                     }

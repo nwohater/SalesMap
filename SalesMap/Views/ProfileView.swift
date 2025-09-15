@@ -53,7 +53,7 @@ struct ProfileView: View {
                 Section("Statistics") {
                     HStack {
                         Image(systemName: "person.3")
-                            .foregroundColor(.blue)
+                            .foregroundColor(.brandPrimary)
                         Text("Total Customers")
                         Spacer()
                         Text("\(totalCustomers)")
@@ -62,7 +62,7 @@ struct ProfileView: View {
                     
                     HStack {
                         Image(systemName: "clock")
-                            .foregroundColor(.green)
+                            .foregroundColor(.brandSuccess)
                         Text("Total Visits")
                         Spacer()
                         Text("\(totalVisits)")
@@ -72,7 +72,7 @@ struct ProfileView: View {
                     if let user = authService.currentUser {
                         HStack {
                             Image(systemName: "map")
-                                .foregroundColor(.orange)
+                                .foregroundColor(.brandSecondary)
                             Text("Territory")
                             Spacer()
                             Text(user.territoryId)
@@ -85,20 +85,20 @@ struct ProfileView: View {
                 Section("Settings") {
                     HStack {
                         Image(systemName: "location")
-                            .foregroundColor(.blue)
+                            .foregroundColor(.brandPrimary)
                         Text("Location Services")
                         Spacer()
                         Text("Enabled")
-                            .foregroundColor(.green)
+                            .foregroundColor(.brandSuccess)
                     }
                     
                     HStack {
                         Image(systemName: "bell")
-                            .foregroundColor(.orange)
+                            .foregroundColor(.brandSecondary)
                         Text("Notifications")
                         Spacer()
                         Text("Enabled")
-                            .foregroundColor(.green)
+                            .foregroundColor(.brandSuccess)
                     }
                 }
                 
@@ -109,9 +109,9 @@ struct ProfileView: View {
                     }) {
                         HStack {
                             Image(systemName: "rectangle.portrait.and.arrow.right")
-                                .foregroundColor(.red)
+                                .foregroundColor(.brandRed)
                             Text("Sign Out")
-                                .foregroundColor(.red)
+                                .foregroundColor(.brandRed)
                         }
                     }
                 }

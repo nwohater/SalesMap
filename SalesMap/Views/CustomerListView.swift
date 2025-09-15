@@ -78,7 +78,7 @@ struct CustomerListView: View {
                         showRecentVisitsOnly: $showRecentVisitsOnly
                     )
                     .padding()
-                    .background(Color(.systemGray6))
+                    .background(Color.brandLight)
                 }
 
                 List(filteredAndSortedCustomers) { customer in
@@ -96,7 +96,7 @@ struct CustomerListView: View {
                     }
                 }) {
                     Image(systemName: showingFilters ? "line.horizontal.3.decrease.circle.fill" : "line.horizontal.3.decrease.circle")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.brandPrimary)
                 }
             )
             .sheet(item: $selectedCustomer) { customer in

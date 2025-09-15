@@ -192,7 +192,7 @@ struct CustomerDetailView: View {
                             HStack {
                                 Text("Tap to view delivery history")
                                     .font(.caption)
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.brandPrimary)
                                 Spacer()
                             }
                             .padding(.top, 4)
@@ -209,8 +209,15 @@ struct CustomerDetailView: View {
             .navigationTitle("Customer Details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button("Done") { dismiss() }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Check In") {
+                        showingCheckIn = true
+                    }
+                    .foregroundColor(.brandPrimary)
+                    .fontWeight(.semibold)
                 }
             }
             .sheet(isPresented: $showingCheckIn) {
@@ -252,7 +259,7 @@ struct ContactRow: View {
     var body: some View {
         HStack {
             Image(systemName: icon)
-                .foregroundColor(.blue)
+                .foregroundColor(.brandPrimary)
                 .frame(width: 20)
             Text(text)
                 .foregroundColor(.primary)
@@ -276,12 +283,12 @@ struct VisitRow: View {
             Spacer()
             if let notes = visit.notes, !notes.isEmpty {
                 Image(systemName: "note.text")
-                    .foregroundColor(.blue)
+                    .foregroundColor(.brandPrimary)
             }
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
-        .background(Color(.systemGray6))
+        .background(Color.brandLight)
         .cornerRadius(8)
     }
 }
@@ -310,7 +317,7 @@ struct ServiceCallRow: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
-        .background(Color(.systemGray6))
+        .background(Color.brandLight)
         .cornerRadius(8)
     }
 }
@@ -356,7 +363,7 @@ struct VisitDetailSheet: View {
                                 .foregroundColor(.secondary)
                         }
                         .padding()
-                        .background(Color(.systemGray6))
+                        .background(Color.brandLight)
                         .cornerRadius(12)
                     }
 
@@ -377,8 +384,8 @@ struct VisitDetailSheet: View {
                                         .fontWeight(.medium)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 6)
-                                        .background(Color.blue.opacity(0.1))
-                                        .foregroundColor(.blue)
+                                        .background(Color.brandPrimary.opacity(0.1))
+                                        .foregroundColor(.brandPrimary)
                                         .cornerRadius(8)
                                 }
 

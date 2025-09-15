@@ -51,6 +51,7 @@ struct MainTabView: View {
                             Text("Profile")
                         }
                 }
+                .accentColor(.brandPrimary)
                 .environmentObject(authService)
                 .environmentObject(dataService)
                 .environmentObject(locationManager)

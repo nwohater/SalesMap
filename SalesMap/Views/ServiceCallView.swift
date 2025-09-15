@@ -168,13 +168,13 @@ enum ServiceCallPriority: String, CaseIterable, Codable {
     var color: Color {
         switch self {
         case .low:
-            return .green
+            return .brandSuccess
         case .medium:
-            return .yellow
+            return .brandSecondary
         case .high:
-            return .orange
+            return .brandDarkBlue
         case .urgent:
-            return .red
+            return .brandRed
         }
     }
 }

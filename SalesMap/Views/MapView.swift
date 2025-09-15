@@ -143,8 +143,8 @@ struct MapView: View {
                         }) {
                             Image(systemName: "scope")
                                 .font(.title2)
-                                .foregroundColor(.blue)
-                                .background(Color(.systemBackground))
+                                .foregroundColor(.brandPrimary)
+                                .background(Color.brandLight)
                                 .clipShape(Circle())
                                 .shadow(radius: 3)
                         }
@@ -159,8 +159,8 @@ struct MapView: View {
                         }) {
                             Image(systemName: "mappin.and.ellipse")
                                 .font(.title2)
-                                .foregroundColor(.blue)
-                                .background(Color(.systemBackground))
+                                .foregroundColor(.brandPrimary)
+                                .background(Color.brandLight)
                                 .clipShape(Circle())
                                 .shadow(radius: 3)
                         }
@@ -177,8 +177,8 @@ struct MapView: View {
                         }) {
                             Image(systemName: showingMapFilters ? "line.horizontal.3.decrease.circle.fill" : "line.horizontal.3.decrease.circle")
                                 .font(.title2)
-                                .foregroundColor(.blue)
-                                .background(Color(.systemBackground))
+                                .foregroundColor(.brandPrimary)
+                                .background(Color.brandLight)
                                 .clipShape(Circle())
                                 .shadow(radius: 3)
                         }
@@ -212,7 +212,7 @@ struct MapView: View {
                     VStack {
                         ProgressView("Loading customers...")
                             .padding()
-                            .background(Color(.systemBackground))
+                            .background(Color.brandLight)
                             .cornerRadius(10)
                             .shadow(radius: 5)
                     }
@@ -249,13 +249,13 @@ struct CustomerMapPin: View {
             VStack(spacing: 0) {
                 Image(systemName: "mappin.circle.fill")
                     .font(.title)
-                    .foregroundColor(.blue)
-                    .background(Color.white)
+                    .foregroundColor(.brandPrimary)
+                    .background(Color.brandLight)
                     .clipShape(Circle())
 
                 Image(systemName: "arrowtriangle.down.fill")
                     .font(.caption)
-                    .foregroundColor(.blue)
+                    .foregroundColor(.brandPrimary)
                     .offset(x: 0, y: -5)
             }
         }
@@ -275,10 +275,10 @@ struct RadiusControlView: View {
             
             Slider(value: $radiusInMiles, in: 5...50, step: 5)
                 .frame(width: 120)
-                .accentColor(.blue)
+                .accentColor(.brandPrimary)
         }
         .padding(12)
-        .background(Color(.systemBackground))
+        .background(Color.brandLight)
         .cornerRadius(10)
         .shadow(radius: 3)
     }
@@ -301,7 +301,7 @@ struct MapFilterControlsView: View {
                 .font(.subheadline)
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(Color.brandLight)
         .cornerRadius(12)
         .shadow(radius: 5)
     }

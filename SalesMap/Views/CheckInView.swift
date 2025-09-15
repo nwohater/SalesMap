@@ -82,14 +82,14 @@ struct CheckInView: View {
                         let distance = location.distance(from: customer.location)
                         HStack {
                             Image(systemName: distance <= 100 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                                .foregroundColor(distance <= 100 ? .green : .orange)
+                                .foregroundColor(distance <= 100 ? .brandPrimary : .brandRed)
                             Text("Distance: \(Int(distance))m from customer")
                                 .font(.caption)
                         }
                     } else {
                         HStack {
                             Image(systemName: "location.slash")
-                                .foregroundColor(.red)
+                                .foregroundColor(.brandRed)
                             Text("Location not available")
                                 .font(.caption)
                         }

@@ -61,7 +61,7 @@ struct FollowUpView: View {
                 if urgentCount > 0 {
                     HStack {
                         Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.red)
+                            .foregroundColor(.brandRed)
                         Text("\(urgentCount) urgent follow-up\(urgentCount == 1 ? "" : "s") (overdue or due today)")
                             .font(.subheadline)
                             .fontWeight(.medium)
@@ -71,10 +71,10 @@ struct FollowUpView: View {
                             showingFilters = true
                         }
                         .font(.caption)
-                        .foregroundColor(.blue)
+                        .foregroundColor(.brandPrimary)
                     }
                     .padding()
-                    .background(Color.red.opacity(0.1))
+                    .background(Color.brandRed.opacity(0.1))
                 }
                 
                 // Filter Controls
@@ -85,7 +85,7 @@ struct FollowUpView: View {
                         followUpCount: filteredAndSortedFollowUps.count
                     )
                     .padding()
-                    .background(Color(.systemGray6))
+                    .background(Color.brandLight)
                 }
                 
                 // Follow-ups list
@@ -214,13 +214,13 @@ struct FollowUpRow: View {
     private var priorityColor: Color {
         switch followUp.priority {
         case .low:
-            return .blue
+            return .brandPrimary
         case .medium:
-            return .orange
+            return .brandSecondary
         case .high:
-            return .red
+            return .brandRed
         case .urgent:
-            return .purple
+            return .brandDarkBlue
         }
     }
 }

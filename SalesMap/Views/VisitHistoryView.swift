@@ -191,17 +191,17 @@ struct VisitHistoryRow: View {
     private var purposeColor: Color {
         switch visit.purpose {
         case .salesCall:
-            return .blue
+            return .brandPrimary
         case .serviceVisit:
-            return .orange
+            return .brandSecondary
         case .productDemo:
-            return .purple
+            return .brandDarkBlue
         case .contractNegotiation:
-            return .green
+            return .brandPrimary
         case .followUp:
-            return .teal
+            return .brandRed
         case .other:
-            return .gray
+            return .brandBlack
         }
     }
 }
