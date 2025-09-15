@@ -37,8 +37,6 @@ struct CheckInView: View {
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
-                        Spacer()
-                        TierBadge(tier: customer.tier)
                     }
                 }
                 
