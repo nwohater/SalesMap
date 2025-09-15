@@ -115,7 +115,7 @@ struct MapView: View {
                     UserAnnotation()
 
                     ForEach(filteredCustomers) { customer in
-                        Annotation(customer.name, coordinate: customer.coordinate) {
+                        Annotation(customer.company, coordinate: customer.coordinate) {
                             CustomerMapPin(customer: customer) {
                                 selectedCustomer = customer
                             }
