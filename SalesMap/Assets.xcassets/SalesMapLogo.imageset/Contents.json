@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "SalesMap.png",
+      "filename" : "SalesMapLogo.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "SalesMap.png",
+      "filename" : "SalesMapLogo.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "SalesMap.png",
+      "filename" : "SalesMapLogo.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
