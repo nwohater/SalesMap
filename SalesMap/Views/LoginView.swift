@@ -19,9 +19,10 @@ struct LoginView: View {
                 
                 // Logo and Title
                 VStack(spacing: 20) {
-                    Image(systemName: "map.circle.fill")
-                        .font(.system(size: 80))
-                        .foregroundColor(.blue)
+                    Image("SalesMapLogo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 120, height: 120)
                     
                     Text("SalesMap")
                         .font(.largeTitle)
