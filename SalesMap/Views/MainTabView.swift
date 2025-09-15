@@ -11,6 +11,10 @@ struct MainTabView: View {
     @StateObject private var authService = AuthenticationService()
     @StateObject private var dataService = DataService()
     @StateObject private var locationManager = LocationManager()
+
+    var urgentFollowUpCount: Int {
+        dataService.getUrgentFollowUps().count
+    }
     
     var body: some View {
         Group {
@@ -33,7 +37,14 @@ struct MainTabView: View {
                             Image(systemName: "clock")
                             Text("Visits")
                         }
-                    
+
+                    FollowUpView()
+                        .tabItem {
+                            Image(systemName: "bell.badge")
+                            Text("Follow-ups")
+                        }
+                        .badge(urgentFollowUpCount > 0 ? "\(urgentFollowUpCount)" : nil)
+
                     ProfileView()
                         .tabItem {
                             Image(systemName: "person.circle")
@@ -49,6 +60,7 @@ struct MainTabView: View {
                         await dataService.fetchCustomers()
                         await dataService.fetchVisits()
                         await dataService.fetchDeliveries()
+                        await dataService.fetchFollowUps()
                     }
                 }
             } else {

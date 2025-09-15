@@ -11,15 +11,7 @@ enum CustomerSortOption: String, CaseIterable {
     case name = "Name"
     case company = "Company"
     case lastContact = "Last Contact"
-    case tier = "Tier"
     case distance = "Distance"
-}
-
-enum CustomerFilterOption: String, CaseIterable {
-    case all = "All"
-    case gold = "Gold"
-    case silver = "Silver"
-    case bronze = "Bronze"
 }
 
 struct CustomerListView: View {
@@ -29,7 +21,6 @@ struct CustomerListView: View {
     @State private var selectedCustomer: Customer?
     @State private var showingFilters = false
     @State private var selectedSort: CustomerSortOption = .name
-    @State private var selectedFilter: CustomerFilterOption = .all
     @State private var showRecentVisitsOnly = false
 
     var filteredAndSortedCustomers: [Customer] {
@@ -42,13 +33,6 @@ struct CustomerListView: View {
                 customer.company.localizedCaseInsensitiveContains(searchText) ||
                 customer.address.localizedCaseInsensitiveContains(searchText) ||
                 customer.email.localizedCaseInsensitiveContains(searchText)
-            }
-        }
-
-        // Apply tier filter
-        if selectedFilter != .all {
-            customers = customers.filter { customer in
-                customer.tier.lowercased() == selectedFilter.rawValue.lowercased()
             }
         }
 
@@ -70,8 +54,6 @@ struct CustomerListView: View {
             customers.sort {
                 ($0.lastContact ?? Date.distantPast) > ($1.lastContact ?? Date.distantPast)
             }
-        case .tier:
-            customers.sort { tierPriority($0.tier) < tierPriority($1.tier) }
         case .distance:
             if let currentLocation = locationManager.location {
                 customers.sort {
@@ -84,14 +66,7 @@ struct CustomerListView: View {
         return customers
     }
 
-    private func tierPriority(_ tier: String) -> Int {
-        switch tier.lowercased() {
-        case "gold": return 0
-        case "silver": return 1
-        case "bronze": return 2
-        default: return 3
-        }
-    }
+
     
     var body: some View {
         NavigationView {
@@ -100,7 +75,6 @@ struct CustomerListView: View {
                 if showingFilters {
                     FilterControlsView(
                         selectedSort: $selectedSort,
-                        selectedFilter: $selectedFilter,
                         showRecentVisitsOnly: $showRecentVisitsOnly
                     )
                     .padding()
@@ -134,7 +108,6 @@ struct CustomerListView: View {
 
 struct FilterControlsView: View {
     @Binding var selectedSort: CustomerSortOption
-    @Binding var selectedFilter: CustomerFilterOption
     @Binding var showRecentVisitsOnly: Bool
 
     var body: some View {
@@ -150,19 +123,6 @@ struct FilterControlsView: View {
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
-            }
-
-            HStack {
-                Text("Filter by tier:")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                Spacer()
-                Picker("Filter", selection: $selectedFilter) {
-                    ForEach(CustomerFilterOption.allCases, id: \.self) { option in
-                        Text(option.rawValue).tag(option)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
             }
 
             Toggle("Recent visits only", isOn: $showRecentVisitsOnly)
@@ -192,13 +152,9 @@ struct CustomerListRow: View {
         Button(action: onTap) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(customer.company)
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        Spacer()
-                        TierBadge(tier: customer.tier)
-                    }
+                    Text(customer.company)
+                        .font(.headline)
+                        .foregroundColor(.primary)
 
                     Text("Contact: \(customer.name)")
                         .font(.subheadline)

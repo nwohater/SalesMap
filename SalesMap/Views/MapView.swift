@@ -24,7 +24,7 @@ struct MapView: View {
     @State private var radiusInMiles: Double = 25.0
     @State private var selectedCustomer: Customer?
     @State private var showingMapFilters = false
-    @State private var selectedTierFilter: CustomerFilterOption = .all
+
     @State private var showUnvisitedOnly = false
 
     var filteredCustomers: [Customer] {
@@ -43,13 +43,6 @@ struct MapView: View {
 
     private func applyFilters(_ customers: [Customer]) -> [Customer] {
         var filtered = customers
-
-        // Apply tier filter
-        if selectedTierFilter != .all {
-            filtered = filtered.filter { customer in
-                customer.tier.lowercased() == selectedTierFilter.rawValue.lowercased()
-            }
-        }
 
         // Apply unvisited filter
         if showUnvisitedOnly {
@@ -196,7 +189,6 @@ struct MapView: View {
                     // Filter controls
                     if showingMapFilters {
                         MapFilterControlsView(
-                            selectedTierFilter: $selectedTierFilter,
                             showUnvisitedOnly: $showUnvisitedOnly,
                             customerCount: filteredCustomers.count
                         )
@@ -257,30 +249,19 @@ struct CustomerMapPin: View {
             VStack(spacing: 0) {
                 Image(systemName: "mappin.circle.fill")
                     .font(.title)
-                    .foregroundColor(colorForTier(customer.tier))
+                    .foregroundColor(.blue)
                     .background(Color.white)
                     .clipShape(Circle())
-                
+
                 Image(systemName: "arrowtriangle.down.fill")
                     .font(.caption)
-                    .foregroundColor(colorForTier(customer.tier))
+                    .foregroundColor(.blue)
                     .offset(x: 0, y: -5)
             }
         }
     }
     
-    private func colorForTier(_ tier: String) -> Color {
-        switch tier.lowercased() {
-        case "gold":
-            return .yellow
-        case "silver":
-            return .gray
-        case "bronze":
-            return .orange
-        default:
-            return .blue
-        }
-    }
+
 }
 
 struct RadiusControlView: View {
@@ -304,7 +285,6 @@ struct RadiusControlView: View {
 }
 
 struct MapFilterControlsView: View {
-    @Binding var selectedTierFilter: CustomerFilterOption
     @Binding var showUnvisitedOnly: Bool
     let customerCount: Int
 
@@ -317,23 +297,8 @@ struct MapFilterControlsView: View {
                 Spacer()
             }
 
-            VStack(spacing: 8) {
-                HStack {
-                    Text("Tier:")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    Spacer()
-                    Picker("Tier Filter", selection: $selectedTierFilter) {
-                        ForEach(CustomerFilterOption.allCases, id: \.self) { option in
-                            Text(option.rawValue).tag(option)
-                        }
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                }
-
-                Toggle("Unvisited only", isOn: $showUnvisitedOnly)
-                    .font(.subheadline)
-            }
+            Toggle("Unvisited only", isOn: $showUnvisitedOnly)
+                .font(.subheadline)
         }
         .padding()
         .background(Color(.systemBackground))

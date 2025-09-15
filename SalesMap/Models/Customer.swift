@@ -79,16 +79,15 @@ struct Customer: Codable, Identifiable {
     let address: String
     let phone: String
     let email: String
-    let tier: String
     let territoryId: String
     let lastContact: Date?
     let latitude: Double
     let longitude: Double
     let totalRevenue: Double
     let lastPurchase: Date?
-    
+
     enum CodingKeys: String, CodingKey {
-        case id, name, company, address, phone, email, tier, latitude, longitude
+        case id, name, company, address, phone, email, latitude, longitude
         case territoryId = "territory_id"
         case lastContact = "last_contact"
         case totalRevenue = "total_revenue"
@@ -116,7 +115,6 @@ extension Customer {
             address: "1 Apple Park Way, Cupertino, CA 95014",
             phone: "+1-408-555-0123",
             email: "john.smith@abcmfg.com",
-            tier: "Gold",
             territoryId: "CA-SOUTH",
             lastContact: Calendar.current.date(byAdding: .day, value: -5, to: Date()),
             latitude: 37.3348,
@@ -131,7 +129,6 @@ extension Customer {
             address: "10600 N De Anza Blvd, Cupertino, CA 95014",
             phone: "+1-408-555-0124",
             email: "sarah.johnson@techsolutions.com",
-            tier: "Silver",
             territoryId: "CA-SOUTH",
             lastContact: Calendar.current.date(byAdding: .day, value: -10, to: Date()),
             latitude: 37.3230,
@@ -146,7 +143,6 @@ extension Customer {
             address: "19501 Stevens Creek Blvd, Cupertino, CA 95014",
             phone: "+1-408-555-0125",
             email: "mike.davis@davisenterprise.com",
-            tier: "Bronze",
             territoryId: "CA-SOUTH",
             lastContact: Calendar.current.date(byAdding: .day, value: -15, to: Date()),
             latitude: 37.3161,
@@ -161,7 +157,6 @@ extension Customer {
             address: "20525 Mariani Ave, Cupertino, CA 95014",
             phone: "+1-408-555-0126",
             email: "lisa.chen@innovationlabs.com",
-            tier: "Gold",
             territoryId: "CA-SOUTH",
             lastContact: Calendar.current.date(byAdding: .day, value: -3, to: Date()),
             latitude: 37.3387,
@@ -176,7 +171,6 @@ extension Customer {
             address: "10123 N Wolfe Rd, Cupertino, CA 95014",
             phone: "+1-408-555-0127",
             email: "robert.wilson@svdynamics.com",
-            tier: "Silver",
             territoryId: "CA-SOUTH",
             lastContact: Calendar.current.date(byAdding: .day, value: -7, to: Date()),
             latitude: 37.3302,
@@ -191,7 +185,6 @@ extension Customer {
             address: "21275 Stevens Creek Blvd, Cupertino, CA 95014",
             phone: "+1-408-555-0128",
             email: "amanda.rodriguez@futuretech.com",
-            tier: "Bronze",
             territoryId: "CA-SOUTH",
             lastContact: Calendar.current.date(byAdding: .day, value: -12, to: Date()),
             latitude: 37.3234,

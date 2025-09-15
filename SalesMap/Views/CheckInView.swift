@@ -18,6 +18,12 @@ struct CheckInView: View {
     @State private var notes: String = ""
     @State private var isCheckingIn = false
     @State private var showingLocationError = false
+
+    // Follow-up related states
+    @State private var createFollowUp = false
+    @State private var followUpDate = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+    @State private var followUpNotes = ""
+    @State private var followUpPriority: FollowUpPriority = .medium
     
     var body: some View {
         NavigationView {
@@ -48,6 +54,29 @@ struct CheckInView: View {
                 Section("Notes") {
                     TextEditor(text: $notes)
                         .frame(minHeight: 100)
+                }
+
+                Section("Follow-up") {
+                    Toggle("Create follow-up reminder", isOn: $createFollowUp)
+
+                    if createFollowUp {
+                        DatePicker("Follow-up date", selection: $followUpDate, in: Date()..., displayedComponents: .date)
+
+                        Picker("Priority", selection: $followUpPriority) {
+                            ForEach(FollowUpPriority.allCases, id: \.self) { priority in
+                                Text(priority.displayName).tag(priority)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Follow-up notes")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            TextEditor(text: $followUpNotes)
+                                .frame(minHeight: 60)
+                        }
+                    }
                 }
                 
                 Section("Location") {
@@ -112,7 +141,26 @@ struct CheckInView: View {
         )
         
         await dataService.createVisit(visit)
-        
+
+        // Create follow-up if requested
+        if createFollowUp {
+            let followUp = FollowUp(
+                id: "followup_\(UUID().uuidString)",
+                customerId: customer.id,
+                userId: "rep_456", // TODO: Get from auth service
+                followUpDate: followUpDate,
+                notes: followUpNotes.isEmpty ? nil : followUpNotes,
+                priority: followUpPriority,
+                isCompleted: false,
+                createdAt: Date(),
+                completedAt: nil,
+                completionNotes: nil,
+                relatedVisitId: visit.id
+            )
+
+            await dataService.createFollowUp(followUp)
+        }
+
         isCheckingIn = false
         dismiss()
     }
