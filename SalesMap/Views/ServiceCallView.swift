@@ -20,98 +20,121 @@ struct ServiceCallView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Header
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Service Call for")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-
-                        Text(customer.company)
-                            .font(.title2)
-                            .fontWeight(.bold)
-
-                        Text("Contact: \(customer.name)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.bottom, 10)
-                    
-
-                    
-                    // Priority Level
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Priority Level")
-                            .font(.headline)
-                        
-                        Picker("Priority", selection: $priority) {
-                            ForEach(ServiceCallPriority.allCases, id: \.self) { priority in
-                                HStack {
-                                    Circle()
-                                        .fill(priority.color)
-                                        .frame(width: 12, height: 12)
-                                    Text(priority.displayName)
-                                }
-                                .tag(priority)
-                            }
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                    }
-                    
-                    // Problem Description
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Problem Description")
-                            .font(.headline)
-                        
-                        TextEditor(text: $problemDescription)
-                            .frame(minHeight: 120)
-                            .padding(8)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(8)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color(.systemGray4), lineWidth: 1)
-                            )
-                        
-                        if problemDescription.isEmpty {
-                            Text("Describe the issue the customer is experiencing...")
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.18),
+                        Color.brandDarkBlue.opacity(0.16),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.14),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Header
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Service Call for")
+                                .font(.headline)
                                 .foregroundColor(.secondary)
-                                .font(.caption)
+
+                            Text(customer.company)
+                                .font(.title2)
+                                .fontWeight(.bold)
+
+                            Text("Contact: \(customer.name)")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
                         }
-                    }
-                    
-                    // Submit Button
-                    Button(action: {
-                        submitServiceCall()
-                    }) {
-                        HStack {
-                            if isSubmitting {
-                                ProgressView()
-                                    .scaleEffect(0.8)
-                                    .foregroundColor(.white)
-                            } else {
-                                Image(systemName: "paperplane.fill")
+                        .padding(.bottom, 10)
+                        
+
+                        
+                        // Priority Level
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Priority Level")
+                                .font(.headline)
+                            
+                            Picker("Priority", selection: $priority) {
+                                ForEach(ServiceCallPriority.allCases, id: \.self) { priority in
+                                    HStack {
+                                        Circle()
+                                            .fill(priority.color)
+                                            .frame(width: 12, height: 12)
+                                        Text(priority.displayName)
+                                    }
+                                    .tag(priority)
+                                }
                             }
-                            Text(isSubmitting ? "Submitting..." : "Submit Service Call")
+                            .pickerStyle(SegmentedPickerStyle())
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(canSubmit ? Color.red : Color.gray)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        
+                        // Problem Description
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Problem Description")
+                                .font(.headline)
+                            
+                            TextEditor(text: $problemDescription)
+                                .frame(minHeight: 120)
+                                .padding(8)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color(.systemGray4), lineWidth: 1)
+                                )
+                            
+                            if problemDescription.isEmpty {
+                                Text("Describe the issue the customer is experiencing...")
+                                    .foregroundColor(.secondary)
+                                    .font(.caption)
+                            }
+                        }
+                        
+                        // Submit Button
+                        Button(action: {
+                            submitServiceCall()
+                        }) {
+                            HStack {
+                                if isSubmitting {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                        .foregroundColor(.white)
+                                } else {
+                                    Image(systemName: "paperplane.fill")
+                                }
+                                Text(isSubmitting ? "Submitting..." : "Submit Service Call")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .buttonStyle(.borderedProminent)
+                            .tint(canSubmit ? .brandPrimary : .gray)
+                        }
+                        .disabled(!canSubmit || isSubmitting)
+                        
+                        Spacer()
                     }
-                    .disabled(!canSubmit || isSubmitting)
-                    
-                    Spacer()
+                    .padding()
                 }
-                .padding()
             }
             .navigationTitle("Service Call")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") { dismiss() }.tint(.brandSecondary)
                 }
             }
             .alert("Service Call Submitted", isPresented: $showingSuccess) {

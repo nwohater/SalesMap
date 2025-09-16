@@ -33,178 +33,198 @@ struct CustomerDetailView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Header
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(customer.company)
-                            .font(.title2)
-                            .fontWeight(.bold)
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.18),
+                        Color.brandDarkBlue.opacity(0.16),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.14),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Header
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(customer.company)
+                                .font(.title2)
+                                .fontWeight(.bold)
 
-                        Text("Contact: \(customer.name)")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    // Contact Information
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Contact Information")
-                            .font(.headline)
-                        
-                        ContactRow(icon: "location", text: customer.address)
-                        ContactRow(icon: "phone", text: customer.phone)
-                        ContactRow(icon: "envelope", text: customer.email)
-                    }
-                    
-                    // Action Buttons
-                    VStack(spacing: 12) {
-                        Button(action: {
-                            showingCheckIn = true
-                        }) {
-                            HStack {
-                                Image(systemName: "checkmark.circle")
-                                Text("Check In")
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                        }
-                        
-                        Button(action: {
-                            openMapsForDirections()
-                        }) {
-                            HStack {
-                                Image(systemName: "location.circle")
-                                Text("Get Directions")
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                        }
-                        
-                        Button(action: {
-                            callCustomer()
-                        }) {
-                            HStack {
-                                Image(systemName: "phone.circle")
-                                Text("Call")
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.orange)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                        }
-
-                        Button(action: {
-                            showingServiceCall = true
-                        }) {
-                            HStack {
-                                Image(systemName: "wrench.and.screwdriver")
-                                Text("Open Service Call")
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.red)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                        }
-                    }
-                    
-                    // Recent Visits
-                    if !recentVisits.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Recent Visits")
+                            Text("Contact: \(customer.name)")
                                 .font(.headline)
-
-                            ForEach(recentVisits) { visit in
-                                VisitRow(visit: visit)
-                                    .onTapGesture {
-                                        selectedVisit = visit
-                                    }
-                            }
+                                .foregroundColor(.secondary)
                         }
-                    }
-
-                    // Recent Service
-                    if !recentServiceCalls.isEmpty {
+                        
+                        // Contact Information
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Recent Service")
+                            Text("Contact Information")
                                 .font(.headline)
-
-                            ForEach(recentServiceCalls) { serviceCall in
-                                ServiceCallRow(serviceCall: serviceCall)
-                            }
+                            
+                            ContactRow(icon: "location", text: customer.address)
+                            ContactRow(icon: "phone", text: customer.phone)
+                            ContactRow(icon: "envelope", text: customer.email)
                         }
-                    }
+                        
+                        // Action Buttons
+                        VStack(spacing: 12) {
+                            Button(action: {
+                                showingCheckIn = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "checkmark.circle")
+                                    Text("Check In")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.brandPrimary)
+                            
+                            Button(action: {
+                                openMapsForDirections()
+                            }) {
+                                HStack {
+                                    Image(systemName: "location.circle")
+                                    Text("Get Directions")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.brandSecondary)
+                            
+                            Button(action: {
+                                callCustomer()
+                            }) {
+                                HStack {
+                                    Image(systemName: "phone.circle")
+                                    Text("Call")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.brandBlack)
 
-                    // Sales Information - Tappable
-                    Button(action: {
-                        showingDeliveryHistory = true
-                    }) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Text("Sales Information")
+                            Button(action: {
+                                showingServiceCall = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "wrench.and.screwdriver")
+                                    Text("Open Service Call")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.brandRed)
+                        }
+                        
+                        // Recent Visits
+                        if !recentVisits.isEmpty {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Recent Visits")
                                     .font(.headline)
-                                    .foregroundColor(.primary)
 
-                                Spacer()
-
-                                Image(systemName: "chevron.right")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-
-                            HStack {
-                                Text("Total Revenue:")
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                Text("$\(Int(customer.totalRevenue).formatted())")
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.primary)
-                            }
-
-                            if let lastPurchase = customer.lastPurchase {
-                                HStack {
-                                    Text("Last Purchase:")
-                                        .foregroundColor(.primary)
-                                    Spacer()
-                                    Text(lastPurchase, style: .date)
-                                        .foregroundColor(.secondary)
+                                ForEach(recentVisits) { visit in
+                                    VisitRow(visit: visit)
+                                        .onTapGesture {
+                                            selectedVisit = visit
+                                        }
                                 }
                             }
-
-                            if let lastContact = customer.lastContact {
-                                HStack {
-                                    Text("Last Contact:")
-                                        .foregroundColor(.primary)
-                                    Spacer()
-                                    Text(lastContact, style: .date)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-
-                            // Hint text
-                            HStack {
-                                Text("Tap to view delivery history")
-                                    .font(.caption)
-                                    .foregroundColor(.brandPrimary)
-                                Spacer()
-                            }
-                            .padding(.top, 4)
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(12)
-                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+
+                        // Recent Service
+                        if !recentServiceCalls.isEmpty {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Recent Service")
+                                    .font(.headline)
+
+                                ForEach(recentServiceCalls) { serviceCall in
+                                    ServiceCallRow(serviceCall: serviceCall)
+                                }
+                            }
+                        }
+
+                        // Sales Information - Tappable
+                        Button(action: {
+                            showingDeliveryHistory = true
+                        }) {
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack {
+                                    Text("Sales Information")
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+
+                                    Spacer()
+
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+
+                                HStack {
+                                    Text("Total Revenue:")
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Text("$\(Int(customer.totalRevenue).formatted())")
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.primary)
+                                }
+
+                                if let lastPurchase = customer.lastPurchase {
+                                    HStack {
+                                        Text("Last Purchase:")
+                                            .foregroundColor(.primary)
+                                        Spacer()
+                                        Text(lastPurchase, style: .date)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+
+                                if let lastContact = customer.lastContact {
+                                    HStack {
+                                        Text("Last Contact:")
+                                            .foregroundColor(.primary)
+                                        Spacer()
+                                        Text(lastContact, style: .date)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+
+                                // Hint text
+                                HStack {
+                                    Text("Tap to view delivery history")
+                                        .font(.caption)
+                                        .foregroundColor(.brandPrimary)
+                                    Spacer()
+                                }
+                                .padding(.top, 4)
+                            }
+                            .padding()
+                            .background(Color(.systemBackground))
+                            .cornerRadius(12)
+                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .padding()
                 }
-                .padding()
             }
             .navigationTitle("Customer Details")
             .navigationBarTitleDisplayMode(.inline)
@@ -281,9 +301,14 @@ struct VisitRow: View {
                     .foregroundColor(.secondary)
             }
             Spacer()
-            if let notes = visit.notes, !notes.isEmpty {
-                Image(systemName: "note.text")
+            HStack(spacing: 8) {
+                if let notes = visit.notes, !notes.isEmpty {
+                    Image(systemName: "note.text")
+                        .foregroundColor(.brandPrimary)
+                }
+                Image(systemName: "chevron.right")
                     .foregroundColor(.brandPrimary)
+                    .font(.caption)
             }
         }
         .padding(.vertical, 8)
@@ -347,7 +372,30 @@ struct VisitDetailSheet: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.18),
+                        Color.brandDarkBlue.opacity(0.16),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.14),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
+
+                ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Customer Info
                     VStack(alignment: .leading, spacing: 8) {
@@ -464,13 +512,13 @@ struct VisitDetailSheet: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.brandPrimary)
                     .padding(.top, 20)
                 }
                 .padding()
+            }
             }
             .navigationTitle("Visit Details")
             .navigationBarTitleDisplayMode(.inline)
@@ -508,7 +556,30 @@ struct CreateFollowUpFromVisitSheet: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.18),
+                        Color.brandDarkBlue.opacity(0.16),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.14),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
+
+                ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("Create Follow-up")
                         .font(.title2)
@@ -608,14 +679,14 @@ struct CreateFollowUpFromVisitSheet: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(isCreating ? Color.gray : Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(isCreating ? .gray : .brandPrimary)
                     .disabled(isCreating)
                     .padding(.top, 20)
                 }
                 .padding()
+            }
             }
             .navigationTitle("New Follow-up")
             .navigationBarTitleDisplayMode(.inline)

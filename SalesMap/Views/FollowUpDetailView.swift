@@ -36,176 +36,198 @@ struct FollowUpDetailView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Customer Section
-                    if let customer = customer {
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.18),
+                        Color.brandDarkBlue.opacity(0.16),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.14),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Customer Section
+                        if let customer = customer {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Customer")
+                                    .font(.headline)
+                                
+                                Button(action: {
+                                    showingCustomerDetail = true
+                                }) {
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(customer.name)
+                                                .font(.title2)
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(.primary)
+                                            Text(customer.company)
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                            Text(customer.address)
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                    .padding()
+                                    .background(Color(.systemBackground))
+                                    .cornerRadius(12)
+                                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                        }
+                        
+                        // Follow-up Details
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Customer")
+                            Text("Follow-up Details")
                                 .font(.headline)
                             
-                            Button(action: {
-                                showingCustomerDetail = true
-                            }) {
+                            VStack(spacing: 16) {
+                                // Priority and Due Date
                                 HStack {
                                     VStack(alignment: .leading, spacing: 4) {
-                                        Text(customer.name)
-                                            .font(.title2)
-                                            .fontWeight(.semibold)
-                                            .foregroundColor(.primary)
-                                        Text(customer.company)
-                                            .font(.subheadline)
+                                        Text("Priority")
+                                            .font(.caption)
                                             .foregroundColor(.secondary)
-                                        Text(customer.address)
+                                        Text(followUp.priority.displayName)
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(priorityColor.opacity(0.1))
+                                            .foregroundColor(priorityColor)
+                                            .cornerRadius(8)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    VStack(alignment: .trailing, spacing: 4) {
+                                        Text("Due Date")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                        HStack(spacing: 4) {
+                                            if isOverdue {
+                                                Image(systemName: "exclamationmark.triangle.fill")
+                                                    .font(.caption)
+                                                    .foregroundColor(.brandRed)
+                                            }
+                                            Text(followUp.followUpDate, style: .date)
+                                                .font(.subheadline)
+                                                .fontWeight(.medium)
+                                                .foregroundColor(isOverdue ? .brandRed : .primary)
+                                        }
+                                    }
+                                }
+                                
+                                // Notes
+                                if let notes = followUp.notes, !notes.isEmpty {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Notes")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                        Text(notes)
+                                            .font(.body)
+                                            .padding()
+                                            .background(Color(.systemGray6))
+                                            .cornerRadius(12)
+                                    }
+                                }
+                                
+                                // Created Date
+                                HStack {
+                                    Text("Created:")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
+                                    Text(followUp.createdAt, style: .date)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .padding()
+                            .background(Color(.systemBackground))
+                            .cornerRadius(12)
+                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                        }
+                        
+                        // Related Visit
+                        if let visit = relatedVisit {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Related Visit")
+                                    .font(.headline)
+                                
+                                VStack(alignment: .leading, spacing: 8) {
+                                    HStack {
+                                        Text(visit.purpose.displayName)
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                        Spacer()
+                                        Text(visit.checkInTime, style: .date)
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
-                                }
-                                .padding()
-                                .background(Color(.systemBackground))
-                                .cornerRadius(12)
-                                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                        }
-                    }
-                    
-                    // Follow-up Details
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Follow-up Details")
-                            .font(.headline)
-                        
-                        VStack(spacing: 16) {
-                            // Priority and Due Date
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Priority")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    Text(followUp.priority.displayName)
-                                        .font(.subheadline)
-                                        .fontWeight(.medium)
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 6)
-                                        .background(priorityColor.opacity(0.1))
-                                        .foregroundColor(priorityColor)
-                                        .cornerRadius(8)
-                                }
-                                
-                                Spacer()
-                                
-                                VStack(alignment: .trailing, spacing: 4) {
-                                    Text("Due Date")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    HStack(spacing: 4) {
-                                        if isOverdue {
-                                            Image(systemName: "exclamationmark.triangle.fill")
-                                                .font(.caption)
-                                                .foregroundColor(.red)
-                                        }
-                                        Text(followUp.followUpDate, style: .date)
-                                            .font(.subheadline)
-                                            .fontWeight(.medium)
-                                            .foregroundColor(isOverdue ? .red : .primary)
+                                    
+                                    if let visitNotes = visit.notes, !visitNotes.isEmpty {
+                                        Text(visitNotes)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                            .lineLimit(3)
                                     }
                                 }
-                            }
-                            
-                            // Notes
-                            if let notes = followUp.notes, !notes.isEmpty {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Notes")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    Text(notes)
-                                        .font(.body)
-                                        .padding()
-                                        .background(Color(.systemGray6))
-                                        .cornerRadius(12)
-                                }
-                            }
-                            
-                            // Created Date
-                            HStack {
-                                Text("Created:")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                                Text(followUp.createdAt, style: .date)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
                             }
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(12)
-                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                    }
-                    
-                    // Related Visit
-                    if let visit = relatedVisit {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Related Visit")
-                                .font(.headline)
-                            
-                            VStack(alignment: .leading, spacing: 8) {
+                        
+                        // Action Buttons
+                        VStack(spacing: 12) {
+                            Button(action: {
+                                showingCompleteConfirmation = true
+                            }) {
                                 HStack {
-                                    Text(visit.purpose.displayName)
-                                        .font(.subheadline)
-                                        .fontWeight(.medium)
-                                    Spacer()
-                                    Text(visit.checkInTime, style: .date)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
+                                    Image(systemName: "checkmark.circle.fill")
+                                    Text("Mark as Complete")
                                 }
-                                
-                                if let visitNotes = visit.notes, !visitNotes.isEmpty {
-                                    Text(visitNotes)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .lineLimit(3)
-                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
                             }
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
-                        }
-                    }
-                    
-                    // Action Buttons
-                    VStack(spacing: 12) {
-                        Button(action: {
-                            showingCompleteConfirmation = true
-                        }) {
-                            HStack {
-                                Image(systemName: "checkmark.circle.fill")
-                                Text("Mark as Complete")
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green)
-                            .foregroundColor(.white)
-                            .cornerRadius(12)
-                        }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.brandSecondary)
 
-                        Button(action: {
-                            showingCreateNewFollowUp = true
-                        }) {
-                            HStack {
-                                Image(systemName: "arrow.right.circle.fill")
-                                Text("Complete & Create New Follow-up")
+                            Button(action: {
+                                showingCreateNewFollowUp = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "arrow.right.circle.fill")
+                                    Text("Complete & Create New Follow-up")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(12)
+                            .buttonStyle(.borderedProminent)
+                            .tint(.brandPrimary)
                         }
+                        .padding(.top, 20)
                     }
-                    .padding(.top, 20)
+                    .padding()
                 }
-                .padding()
             }
             .navigationTitle("Follow-up")
             .navigationBarTitleDisplayMode(.inline)
@@ -258,13 +280,13 @@ struct FollowUpDetailView: View {
     private var priorityColor: Color {
         switch followUp.priority {
         case .low:
-            return .blue
+            return .brandPrimary
         case .medium:
-            return .orange
+            return .brandSecondary
         case .high:
-            return .red
+            return .brandRed
         case .urgent:
-            return .purple
+            return .brandDarkBlue
         }
     }
 }
@@ -310,10 +332,9 @@ struct CompleteFollowUpSheet: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
                 }
+                .buttonStyle(.borderedProminent)
+                .tint(.brandSecondary)
             }
             .padding()
             .navigationBarTitleDisplayMode(.inline)
@@ -325,6 +346,9 @@ struct CompleteFollowUpSheet: View {
         }
     }
 }
+
+// Assuming CreateFollowUpFromVisitSheet exists, update its primary button as instructed.
+// Since that struct is not present in the current file, no changes are made here.
 
 // MARK: - Create New Follow-up Sheet
 struct CreateNewFollowUpSheet: View {
@@ -411,10 +435,9 @@ struct CreateNewFollowUpSheet: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.brandPrimary)
                     .padding(.top, 20)
                 }
                 .padding()

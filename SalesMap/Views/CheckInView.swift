@@ -27,7 +27,30 @@ struct CheckInView: View {
     
     var body: some View {
         NavigationView {
-            Form {
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.18),
+                        Color.brandDarkBlue.opacity(0.16),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.14),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
+
+                Form {
                 Section("Customer") {
                     HStack {
                         VStack(alignment: .leading) {
@@ -106,11 +129,13 @@ struct CheckInView: View {
                     }
                 }
                 .disabled(isCheckingIn || locationManager.location == nil)
+                .tint(.brandPrimary)
             )
             .alert("Location Required", isPresented: $showingLocationError) {
                 Button("OK") { }
             } message: {
                 Text("Location access is required to check in. Please enable location services and try again.")
+            }
             }
         }
     }

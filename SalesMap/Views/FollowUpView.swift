@@ -56,74 +56,100 @@ struct FollowUpView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // Urgent banner (overdue + due today)
-                if urgentCount > 0 {
-                    HStack {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.brandRed)
-                        Text("\(urgentCount) urgent follow-up\(urgentCount == 1 ? "" : "s") (overdue or due today)")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        Spacer()
-                        Button("Show") {
-                            showUrgentOnly = true
-                            showingFilters = true
-                        }
-                        .font(.caption)
-                        .foregroundColor(.brandPrimary)
-                    }
-                    .padding()
-                    .background(Color.brandRed.opacity(0.1))
-                }
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.20),
+                        Color.brandDarkBlue.opacity(0.12),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
                 
-                // Filter Controls
-                if showingFilters {
-                    FollowUpFilterControlsView(
-                        selectedPriorityFilter: $selectedPriorityFilter,
-                        showUrgentOnly: $showUrgentOnly,
-                        followUpCount: filteredAndSortedFollowUps.count
-                    )
-                    .padding()
-                    .background(Color.brandLight)
-                }
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.10),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
                 
-                // Follow-ups list
-                if filteredAndSortedFollowUps.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(.green)
-                        Text("All caught up!")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        Text("No pending follow-ups at this time.")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    List(filteredAndSortedFollowUps) { followUp in
-                        FollowUpRow(followUp: followUp) {
-                            selectedFollowUp = followUp
+                VStack(spacing: 0) {
+                    // Urgent banner (overdue + due today)
+                    if urgentCount > 0 {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.brandRed)
+                            Text("\(urgentCount) urgent follow-up\(urgentCount == 1 ? "" : "s") (overdue or due today)")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            Spacer()
+                            Button("Show") {
+                                showUrgentOnly = true
+                                showingFilters = true
+                            }
+                            .font(.caption)
+                            .foregroundColor(.brandPrimary)
                         }
+                        .padding()
+                        .background(Color.brandRed.opacity(0.1))
                     }
-                    .searchable(text: $searchText, prompt: "Search follow-ups...")
-                }
-            }
-            .navigationTitle("Follow-ups (\(filteredAndSortedFollowUps.count))")
-            .navigationBarItems(
-                trailing: Button(action: {
-                    withAnimation {
-                        showingFilters.toggle()
+                    
+                    // Filter Controls
+                    if showingFilters {
+                        FollowUpFilterControlsView(
+                            selectedPriorityFilter: $selectedPriorityFilter,
+                            showUrgentOnly: $showUrgentOnly,
+                            followUpCount: filteredAndSortedFollowUps.count
+                        )
+                        .padding()
+                        .background(Color.brandLight)
                     }
-                }) {
-                    Image(systemName: showingFilters ? "line.horizontal.3.decrease.circle.fill" : "line.horizontal.3.decrease.circle")
-                        .foregroundColor(.blue)
+                    
+                    // Follow-ups list
+                    if filteredAndSortedFollowUps.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 60))
+                                .foregroundColor(.green)
+                            Text("All caught up!")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                            Text("No pending follow-ups at this time.")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        List(filteredAndSortedFollowUps) { followUp in
+                            FollowUpRow(followUp: followUp) {
+                                selectedFollowUp = followUp
+                            }
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                        }
+                        .searchable(text: $searchText, prompt: "Search follow-ups...")
+                    }
                 }
-            )
-            .sheet(item: $selectedFollowUp) { followUp in
-                FollowUpDetailView(followUp: followUp)
+                .navigationTitle("Follow-ups (\(filteredAndSortedFollowUps.count))")
+                .navigationBarItems(
+                    trailing: Button(action: {
+                        withAnimation {
+                            showingFilters.toggle()
+                        }
+                    }) {
+                        Image(systemName: showingFilters ? "line.horizontal.3.decrease.circle.fill" : "line.horizontal.3.decrease.circle")
+                            .foregroundColor(.brandPrimary)
+                    }
+                )
+                .sheet(item: $selectedFollowUp) { followUp in
+                    FollowUpDetailView(followUp: followUp)
+                }
             }
         }
     }
@@ -182,10 +208,10 @@ struct FollowUpRow: View {
                     HStack(spacing: 4) {
                         Image(systemName: isOverdue ? "clock.badge.exclamationmark" : "clock")
                             .font(.caption)
-                            .foregroundColor(isOverdue ? .red : .blue)
+                            .foregroundColor(isOverdue ? .brandRed : .brandPrimary)
                         Text(timeUntilDue)
                             .font(.caption)
-                            .foregroundColor(isOverdue ? .red : .blue)
+                            .foregroundColor(isOverdue ? .brandRed : .brandPrimary)
                     }
                     
                     Spacer()
@@ -193,7 +219,7 @@ struct FollowUpRow: View {
                     if let notes = followUp.notes, !notes.isEmpty {
                         Image(systemName: "note.text")
                             .font(.caption)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.brandSecondary)
                     }
                 }
                 
@@ -205,8 +231,24 @@ struct FollowUpRow: View {
                         .lineLimit(2)
                         .padding(.top, 4)
                 }
+
+                // Tap indicator
+                HStack {
+                    Spacer()
+                    Text("Tap to view details")
+                        .font(.caption2)
+                        .foregroundColor(.brandPrimary)
+                    Image(systemName: "chevron.right")
+                        .font(.caption2)
+                        .foregroundColor(.brandPrimary)
+                }
+                .padding(.top, 4)
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .background(Color(.systemBackground))
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
         }
         .buttonStyle(PlainButtonStyle())
     }

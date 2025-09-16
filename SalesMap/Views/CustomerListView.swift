@@ -67,40 +67,66 @@ struct CustomerListView: View {
     }
 
 
-    
+
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // Filter and Sort Controls
-                if showingFilters {
-                    FilterControlsView(
-                        selectedSort: $selectedSort,
-                        showRecentVisitsOnly: $showRecentVisitsOnly
-                    )
-                    .padding()
-                    .background(Color.brandLight)
-                }
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.18),
+                        Color.brandDarkBlue.opacity(0.16),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
 
-                List(filteredAndSortedCustomers) { customer in
-                    CustomerListRow(customer: customer) {
-                        selectedCustomer = customer
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.14),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    // Filter and Sort Controls
+                    if showingFilters {
+                        FilterControlsView(
+                            selectedSort: $selectedSort,
+                            showRecentVisitsOnly: $showRecentVisitsOnly
+                        )
+                        .padding()
+                        .background(Color.brandLight)
                     }
-                }
-                .searchable(text: $searchText, prompt: "Search customers...")
-            }
-            .navigationTitle("Customers (\(filteredAndSortedCustomers.count))")
-            .navigationBarItems(
-                trailing: Button(action: {
-                    withAnimation {
-                        showingFilters.toggle()
+
+                    List(filteredAndSortedCustomers) { customer in
+                        CustomerListRow(customer: customer) {
+                            selectedCustomer = customer
+                        }
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
                     }
-                }) {
-                    Image(systemName: showingFilters ? "line.horizontal.3.decrease.circle.fill" : "line.horizontal.3.decrease.circle")
-                        .foregroundColor(.brandPrimary)
+                    .searchable(text: $searchText, prompt: "Search customers...")
                 }
-            )
-            .sheet(item: $selectedCustomer) { customer in
-                CustomerDetailView(customer: customer)
+                .navigationTitle("Customers (\(filteredAndSortedCustomers.count))")
+                .navigationBarItems(
+                    trailing: Button(action: {
+                        withAnimation {
+                            showingFilters.toggle()
+                        }
+                    }) {
+                        Image(systemName: showingFilters ? "line.horizontal.3.decrease.circle.fill" : "line.horizontal.3.decrease.circle")
+                            .foregroundColor(.brandPrimary)
+                    }
+                )
+                .sheet(item: $selectedCustomer) { customer in
+                    CustomerDetailView(customer: customer)
+                }
             }
         }
     }
@@ -164,7 +190,7 @@ struct CustomerListRow: View {
                         if let lastVisit = lastVisit {
                             Text("Last visit: \(lastVisit.checkInTime, style: .date)")
                                 .font(.caption)
-                                .foregroundColor(.blue)
+                                .foregroundColor(.brandPrimary)
                         } else if let lastContact = customer.lastContact {
                             Text("Last contact: \(lastContact, style: .date)")
                                 .font(.caption)
@@ -176,19 +202,24 @@ struct CustomerListRow: View {
                         if let distance = distanceText {
                             Text(distance)
                                 .font(.caption)
-                                .foregroundColor(.orange)
+                                .foregroundColor(.brandSecondary)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
-                                .background(Color.orange.opacity(0.1))
+                                .background(Color.brandSecondary.opacity(0.1))
                                 .cornerRadius(4)
                         }
                     }
                 }
 
                 Image(systemName: "chevron.right")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.brandPrimary)
                     .font(.caption)
             }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .background(Color(.systemBackground))
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -198,3 +229,4 @@ struct CustomerListRow: View {
     CustomerListView()
         .environmentObject(DataService())
 }
+

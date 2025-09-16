@@ -26,94 +26,118 @@ struct DeliveryHistoryView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Header with customer info
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(customer.company)
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        Text("Contact: \(customer.name)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        
-                        Text(customer.address)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
-                    
-                    // Summary section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Recent Delivery Summary")
-                            .font(.headline)
-                        
-                        HStack {
-                            Text("Total Deliveries:")
-                            Spacer()
-                            Text("\(recentDeliveries.count)")
-                                .fontWeight(.semibold)
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.18),
+                        Color.brandDarkBlue.opacity(0.16),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.14),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Header with customer info
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(customer.company)
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            
+                            Text("Contact: \(customer.name)")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            Text(customer.address)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
                         
-                        HStack {
-                            Text("Total Value:")
-                            Spacer()
-                            Text("$\(Int(totalDeliveryValue).formatted())")
-                                .fontWeight(.semibold)
-                                .foregroundColor(.green)
-                        }
-                        
-                        if let lastDelivery = recentDeliveries.first {
+                        // Summary section
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Recent Delivery Summary")
+                                .font(.headline)
+                            
                             HStack {
-                                Text("Last Delivery:")
+                                Text("Total Deliveries:")
                                 Spacer()
-                                Text(lastDelivery.date, style: .date)
-                                    .foregroundColor(.secondary)
+                                Text("\(recentDeliveries.count)")
+                                    .fontWeight(.semibold)
+                            }
+                            
+                            HStack {
+                                Text("Total Value:")
+                                Spacer()
+                                Text("$\(Int(totalDeliveryValue).formatted())")
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.green)
+                            }
+                            
+                            if let lastDelivery = recentDeliveries.first {
+                                HStack {
+                                    Text("Last Delivery:")
+                                    Spacer()
+                                    Text(lastDelivery.date, style: .date)
+                                        .foregroundColor(.secondary)
+                                }
                             }
                         }
-                    }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                    
-                    // Delivery history list
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Recent Deliveries (Last 5)")
-                            .font(.headline)
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .cornerRadius(12)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                         
-                        if recentDeliveries.isEmpty {
-                            VStack(spacing: 12) {
-                                Image(systemName: "shippingbox")
-                                    .font(.system(size: 40))
-                                    .foregroundColor(.secondary)
-                                
-                                Text("No delivery history")
-                                    .font(.headline)
-                                    .foregroundColor(.secondary)
-                                
-                                Text("No deliveries found for this customer")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .multilineTextAlignment(.center)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 40)
-                        } else {
-                            LazyVStack(spacing: 12) {
-                                ForEach(recentDeliveries) { delivery in
-                                    DeliveryRow(delivery: delivery) {
-                                        selectedDelivery = delivery
+                        // Delivery history list
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Recent Deliveries (Last 5)")
+                                .font(.headline)
+                            
+                            if recentDeliveries.isEmpty {
+                                VStack(spacing: 12) {
+                                    Image(systemName: "shippingbox")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.secondary)
+                                    
+                                    Text("No delivery history")
+                                        .font(.headline)
+                                        .foregroundColor(.secondary)
+                                    
+                                    Text("No deliveries found for this customer")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.center)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 40)
+                            } else {
+                                LazyVStack(spacing: 12) {
+                                    ForEach(recentDeliveries) { delivery in
+                                        DeliveryRow(delivery: delivery) {
+                                            selectedDelivery = delivery
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                    .padding()
                 }
-                .padding()
             }
             .navigationTitle("Delivery History")
             .navigationBarTitleDisplayMode(.inline)

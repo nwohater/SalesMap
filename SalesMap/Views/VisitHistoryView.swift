@@ -13,6 +13,7 @@ struct VisitHistoryView: View {
     @State private var selectedPurposeFilter: VisitPurpose?
     @State private var selectedDateRange: DateRange = .all
     @State private var showingFilters = false
+    @State private var selectedVisit: Visit?
 
     enum DateRange: String, CaseIterable {
         case all = "All Time"
@@ -65,33 +66,67 @@ struct VisitHistoryView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // Filter Controls
-                if showingFilters {
-                    VisitFilterControlsView(
-                        selectedPurposeFilter: $selectedPurposeFilter,
-                        selectedDateRange: $selectedDateRange
-                    )
-                    .padding()
-                    .background(Color(.systemGray6))
-                }
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.18),
+                        Color.brandDarkBlue.opacity(0.16),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
 
-                List(filteredAndSortedVisits) { visit in
-                    VisitHistoryRow(visit: visit)
-                }
-                .searchable(text: $searchText, prompt: "Search visits...")
-            }
-            .navigationTitle("Visits (\(filteredAndSortedVisits.count))")
-            .navigationBarItems(
-                trailing: Button(action: {
-                    withAnimation {
-                        showingFilters.toggle()
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.14),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    // Filter Controls
+                    if showingFilters {
+                        VisitFilterControlsView(
+                            selectedPurposeFilter: $selectedPurposeFilter,
+                            selectedDateRange: $selectedDateRange
+                        )
+                        .padding()
+                        .background(Color(.systemGray6))
                     }
-                }) {
-                    Image(systemName: showingFilters ? "line.horizontal.3.decrease.circle.fill" : "line.horizontal.3.decrease.circle")
-                        .foregroundColor(.blue)
+
+                    List(filteredAndSortedVisits) { visit in
+                        VisitHistoryRow(visit: visit)
+                            .onTapGesture {
+                                selectedVisit = visit
+                            }
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                    }
+                    .searchable(text: $searchText, prompt: "Search visits...")
                 }
-            )
+                .navigationTitle("Visits (\(filteredAndSortedVisits.count))")
+                .navigationBarItems(
+                    trailing: Button(action: {
+                        withAnimation {
+                            showingFilters.toggle()
+                        }
+                    }) {
+                        Image(systemName: showingFilters ? "line.horizontal.3.decrease.circle.fill" : "line.horizontal.3.decrease.circle")
+                            .foregroundColor(.brandPrimary)
+                    }
+                )
+            }
+            .sheet(item: $selectedVisit) { visit in
+                if let customer = dataService.getCustomer(by: visit.customerId) {
+                    VisitDetailSheet(visit: visit, customer: customer)
+                }
+            }
         }
     }
 }
@@ -161,8 +196,8 @@ struct VisitHistoryRow: View {
                         .font(.caption)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Color.green.opacity(0.1))
-                        .foregroundColor(.green)
+                        .background(Color.brandSecondary.opacity(0.1))
+                        .foregroundColor(.brandSecondary)
                         .cornerRadius(6)
                 }
 
@@ -171,7 +206,7 @@ struct VisitHistoryRow: View {
                 if visit.photos?.isEmpty == false {
                     Image(systemName: "camera.fill")
                         .font(.caption)
-                        .foregroundColor(.orange)
+                        .foregroundColor(.brandSecondary)
                 }
             }
 
@@ -183,9 +218,24 @@ struct VisitHistoryRow: View {
                     .lineLimit(3)
                     .padding(.top, 4)
             }
+
+            // Tap indicator
+            HStack {
+                Spacer()
+                Text("Tap to view details")
+                    .font(.caption2)
+                    .foregroundColor(.brandPrimary)
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundColor(.brandPrimary)
+            }
+            .padding(.top, 4)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 4)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 
     private var purposeColor: Color {

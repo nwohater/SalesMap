@@ -14,86 +14,108 @@ struct LoginView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 30) {
-                Spacer()
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.brandPrimary.opacity(0.18),
+                        Color.brandDarkBlue.opacity(0.16),
+                        Color.brandBackground
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
                 
-                // Logo and Title
-                VStack(spacing: 20) {
-                    Image("SalesMapLogo")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 120, height: 120)
+                RadialGradient(
+                    colors: [
+                        Color.brandDarkBlue.opacity(0.14),
+                        Color.clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 400
+                )
+                .ignoresSafeArea()
+                
+                VStack(spacing: 30) {
+                    Spacer()
                     
-                    Text("SalesMap")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    
-                    Text("Mobile CRM with Mapping")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-                
-                // Login Form
-                VStack(spacing: 20) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Email")
-                            .font(.headline)
-                        TextField("Enter your email", text: $email)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .keyboardType(.emailAddress)
-                            .autocapitalization(.none)
+                    // Logo and Title
+                    VStack(spacing: 20) {
+                        Image("SalesMapLogo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 120, height: 120)
+                        
+                        Text("SalesMap")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        
+                        Text("Mobile CRM with Mapping")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                     }
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Password")
-                            .font(.headline)
-                        SecureField("Enter your password", text: $password)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                    }
+                    Spacer()
                     
-                    if let errorMessage = authService.errorMessage {
-                        Text(errorMessage)
-                            .foregroundColor(.brandRed)
-                            .font(.caption)
-                    }
-                    
-                    Button(action: {
-                        Task {
-                            await authService.signIn(email: email, password: password)
+                    // Login Form
+                    VStack(spacing: 20) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Email")
+                                .font(.headline)
+                            TextField("Enter your email", text: $email)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .keyboardType(.emailAddress)
+                                .autocapitalization(.none)
                         }
-                    }) {
-                        HStack {
-                            if authService.isLoading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                    .scaleEffect(0.8)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Password")
+                                .font(.headline)
+                            SecureField("Enter your password", text: $password)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                        }
+                        
+                        if let errorMessage = authService.errorMessage {
+                            Text(errorMessage)
+                                .foregroundColor(.brandRed)
+                                .font(.caption)
+                        }
+                        
+                        Button(action: {
+                            Task {
+                                await authService.signIn(email: email, password: password)
                             }
-                            Text("Sign In")
+                        }) {
+                            HStack {
+                                if authService.isLoading {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                }
+                                Text("Sign In")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.brandPrimary)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .buttonStyle(.borderedProminent)
+                        .tint(.brandPrimary)
+                        .disabled(authService.isLoading || email.isEmpty || password.isEmpty)
                     }
-                    .disabled(authService.isLoading || email.isEmpty || password.isEmpty)
+                    .padding(.horizontal, 40)
+                    
+                    Spacer()
+                    
+                    // Mock credentials hint
+                    VStack(spacing: 8) {
+                        Text("For MVP Testing:")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("Use any email and password to sign in")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.bottom, 20)
                 }
-                .padding(.horizontal, 40)
-                
-                Spacer()
-                
-                // Mock credentials hint
-                VStack(spacing: 8) {
-                    Text("For MVP Testing:")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("Use any email and password to sign in")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.bottom, 20)
             }
             .navigationBarHidden(true)
         }
@@ -104,3 +126,4 @@ struct LoginView: View {
     LoginView()
         .environmentObject(AuthenticationService())
 }
+
