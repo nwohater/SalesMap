@@ -16,6 +16,7 @@ struct CustomerDetailView: View {
     @State private var showingServiceCall = false
     @State private var showingDeliveryHistory = false
     @State private var selectedVisit: Visit?
+    @State private var selectedServiceCall: ServiceCall?
     
     var recentVisits: [Visit] {
         dataService.getVisitsForCustomer(customer.id)
@@ -156,7 +157,9 @@ struct CustomerDetailView: View {
                                     .font(.headline)
 
                                 ForEach(recentServiceCalls) { serviceCall in
-                                    ServiceCallRow(serviceCall: serviceCall)
+                                    ServiceCallRow(serviceCall: serviceCall) {
+                                        selectedServiceCall = serviceCall
+                                    }
                                 }
                             }
                         }
@@ -252,6 +255,9 @@ struct CustomerDetailView: View {
             .sheet(item: $selectedVisit) { visit in
                 VisitDetailSheet(visit: visit, customer: customer)
             }
+            .sheet(item: $selectedServiceCall) { serviceCall in
+                ServiceDetailView(serviceCall: serviceCall)
+            }
         }
     }
     
@@ -320,30 +326,40 @@ struct VisitRow: View {
 
 struct ServiceCallRow: View {
     let serviceCall: ServiceCall
+    let onTap: () -> Void
 
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(serviceCall.problemDescription)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .lineLimit(2)
-                Text(serviceCall.createdAt, style: .date)
+        Button(action: onTap) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(serviceCall.problemDescription)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .lineLimit(2)
+                        .foregroundColor(.primary)
+                    Text(serviceCall.createdAt, style: .date)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 4) {
+                    PriorityBadge(priority: serviceCall.priority)
+                    Text(serviceCall.status.displayName)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundColor(.secondary)
+                    .padding(.leading, 8)
             }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 4) {
-                PriorityBadge(priority: serviceCall.priority)
-                Text(serviceCall.status.displayName)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .background(Color.brandLight)
+            .cornerRadius(8)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
-        .background(Color.brandLight)
-        .cornerRadius(8)
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

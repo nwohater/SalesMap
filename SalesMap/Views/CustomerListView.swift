@@ -20,7 +20,7 @@ struct CustomerListView: View {
     @State private var searchText = ""
     @State private var selectedCustomer: Customer?
     @State private var showingFilters = false
-    @State private var selectedSort: CustomerSortOption = .name
+    @State private var selectedSort: CustomerSortOption = .distance
     @State private var showRecentVisitsOnly = false
 
     var filteredAndSortedCustomers: [Customer] {
